@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Incident Report Visualiser</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="logo">
+        <span class="logo-icon">🛡️</span>
+        <span class="logo-text">AI Structured Incident Report Generator</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+
+    <!-- ── Upload area ─────────────────────────────────────── -->
+    <div id="input-section" style="display:flex;justify-content:center">
+      <section class="card upload-card">
+        <h2 class="card-title">🚀 Upload Report (RAG Pipeline)</h2>
+        <p class="card-hint">Upload a <code>.pdf</code> or <code>.txt</code> report — the RAG pipeline extracts incidents and visualises them automatically.</p>
+
+        <div id="drop-zone" class="drop-zone">
+          <span class="dz-icon">📄</span>
+          <p class="dz-label">Drag &amp; drop or
+            <label class="dz-browse" for="report-file-input">browse</label>
+          </p>
+          <input id="report-file-input" type="file" accept=".pdf,.txt" hidden />
+        </div>
+
+        <div id="file-preview" class="file-preview hidden">
+          <span id="file-name" class="file-name"></span>
+          <button id="clear-file" class="btn-icon" title="Remove">✕</button>
+        </div>
+
+        <button id="extract-btn" class="btn btn-primary btn-block" disabled>
+          Extract &amp; Visualise
+        </button>
+        <div id="extract-status" class="status-msg hidden"></div>
+      </section>
+    </div><!-- #input-section -->
+
+    <!-- ── New Analysis bar (shown after extraction) ─────────── -->
+    <div id="new-analysis-bar" class="new-analysis-bar hidden">
+      <span id="extracted-file-label" class="extracted-label"></span>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <button id="download-json-btn" class="btn btn-outline btn-sm">⬇ Download JSON</button>
+        <button id="new-analysis-btn" class="btn btn-primary btn-sm">↺ New Analysis</button>
+      </div>
+    </div>
+
+    <!-- ── Validation Errors ──────────────────────────────────── -->
+    <div id="validation-box" class="card card-warn hidden">
+      <h3 class="card-title">⚠ Validation Warnings</h3>
+      <ul id="validation-list" class="error-list"></ul>
+    </div>
+
+    <!-- ── Summary Bar ────────────────────────────────────────── -->
+    <div id="summary-bar" class="summary-bar hidden">
+      <div id="stat-total"    class="stat-chip">— Total</div>
+      <div id="stat-critical" class="stat-chip chip-critical">— Critical</div>
+      <div id="stat-high"     class="stat-chip chip-high">— High</div>
+      <div id="stat-medium"   class="stat-chip chip-medium">— Medium</div>
+      <div id="stat-low"      class="stat-chip chip-low">— Low</div>
+    </div>
+
+    <!-- ── Results Toolbar ────────────────────────────────────── -->
+    <div id="results-toolbar" class="results-toolbar hidden">
+      <div class="toolbar-left">
+        <input id="filter-input" class="input input-sm" type="text" placeholder="Filter by keyword…" />
+        <select id="filter-severity" class="select select-sm">
+          <option value="">All Severities</option>
+          <option>Critical</option><option>High</option>
+          <option>Medium</option><option>Low</option><option>Informational</option>
+        </select>
+      </div>
+      <div class="toolbar-right">
+        <button id="export-json" class="btn btn-outline btn-sm">⬇ JSON</button>
+        <button id="export-csv"  class="btn btn-outline btn-sm">⬇ CSV</button>
+        <button id="export-pdf"  class="btn btn-outline btn-sm">⬇ PDF</button>
+        <div class="view-toggle">
+          <button id="toggle-cards" class="view-btn active" title="Card View">⊞</button>
+          <button id="toggle-table" class="view-btn"        title="Table View">☰</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Card View ──────────────────────────────────────────── -->
+    <div id="card-view" class="incidents-grid hidden"></div>
+
+    <!-- ── Table View (R5) ────────────────────────────────────── -->
+    <div id="table-view" class="table-wrapper hidden">
+      <table class="incidents-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Type</th>
+            <th>Severity</th>
+            <th>Description</th>
+            <th>Citation</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- ── Empty State ────────────────────────────────────────── -->
+    <div id="empty-state" class="empty-state hidden"></div>
+
+  </main>
+
+  <!-- ── Detail Modal ───────────────────────────────────────── -->
+  <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div id="modal-id" class="modal-id"></div>
+          <h2 id="modal-title" class="modal-title"></h2>
+        </div>
+        <button id="modal-close" class="btn-icon" title="Close">✕</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
